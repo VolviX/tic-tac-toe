@@ -1,13 +1,13 @@
 const gameboard = {
-    firstRow: ['1', ' | ', '2', ' | ', '3'],
-    secondRow: ['4', ' | ', '5', ' | ', '6'],
-    thirdRow: ['7', ' | ', '8', ' | ', '9'],
+    board: ['1', ' | ', '2', ' | ', '3', 
+            '4', ' | ', '5', ' | ', '6', 
+            '7', ' | ', '8', ' | ', '9'],
     display() {
-        console.log(
-            this.firstRow.join('') + '\n' +
-            this.secondRow.join('') + '\n' +
-            this.thirdRow.join('')
-        );
+        console.log(`
+            ${this.board.slice(0, 5).join('')}\n
+            ${this.board.slice(5, 10).join('')}\n
+            ${this.board.slice(10).join('')}
+        `);
     },
 };
 
@@ -23,59 +23,47 @@ const player = {
 
 const game = {
     playerTurn: true, // true for X and false for O
-    turn() {
+    putMarker(index) {
+        if (this.playerTurn) {
+            gameboard.board[index] = playerOne.marker;
+        } else {
+            gameboard.board[index] = playerTwo.marker;
+        }
+    },
+    whosTurn() {
         if (this.playerTurn) {
             console.log('Player One\'s turn');
         } else {
             console.log('Player Two\'s turn');
         }
-
-        while (true) {
-            const userInput = prompt('Position (1-9): ');
-
-            if (userInput > 0 && userInput < 10) {
-                if (userInput > 0 && userInput < 4) {
-                    // first row
-                    const index = gameboard.firstRow.indexOf(userInput);
-                    
-                    if (this.playerTurn) {
-                        gameboard.firstRow[index] = playerOne.marker;
-                    } else {
-                        gameboard.firstRow[index] = playerTwo.marker;
-                    }
-                } else if (userInput > 3 && userInput < 7) {
-                    // second row
-                    const index = gameboard.secondRow.indexOf(userInput);
-                    
-                    if (this.playerTurn) {
-                        gameboard.secondRow[index] = playerOne.marker;
-                    } else {
-                        gameboard.secondRow[index] = playerTwo.marker;
-                    }
-                } else {
-                    // third row
-                    const index = gameboard.thirdRow.indexOf(userInput);
-                    
-                    if (this.playerTurn) {
-                        gameboard.thirdRow[index] = playerOne.marker;
-                    } else {
-                        gameboard.thirdRow[index] = playerTwo.marker;
-                    }
-                }
-                this.playerTurn = !this.playerTurn;
-                gameboard.display();
-                break
-            } else {
-                console.log('Invalid position, try again.')
-            }
-        }
     },
     didSomeoneWin() {
-        // checks positions for a winner or draw
+        // checks positions for a winner or draw -- return true if so
     },
 };
 
-gameboard.display();
 const playerOne = player.create({name: "John", marker: "X", score: 0});
 const playerTwo = player.create({name: "Jane", marker: "O", score: 0});
-game.turn();
+
+(() => {
+    while (true) {
+        game.whosTurn();
+        const userInput = prompt('Position (1-9): ');
+        
+        if (userInput > 0 && userInput < 10) {
+            const index = gameboard.board.indexOf(userInput);  // cover the taken positions??
+            game.putMarker(index);
+            gameboard.display();
+
+            if (game.didSomeoneWin == true) {
+                break
+            }
+
+            game.playerTurn = !game.playerTurn;
+        } else if (userInput === null) {
+            break
+        } else {
+            console.log('Invalid position, try again.')
+        }
+    }
+})();
