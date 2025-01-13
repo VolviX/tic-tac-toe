@@ -38,7 +38,31 @@ const game = {
         }
     },
     didSomeoneWin() {
-        // checks positions for a winner or draw -- return true if so
+        const locationsToCheck = ['1', '2', '3', '4', '5', '6', '7', '8', '9']; 
+        const isItDraw = locationsToCheck.every(num => !gameboard.board.includes(num));
+
+        if (
+            (gameboard.board[0] === gameboard.board[2] && gameboard.board[2] === gameboard.board[4]) || // top horizontal
+            (gameboard.board[5] === gameboard.board[7] && gameboard.board[7] === gameboard.board[9]) || // mid horizontal
+            (gameboard.board[10] === gameboard.board[12] && gameboard.board[12] === gameboard.board[14]) || // bottom horizontal
+    
+            (gameboard.board[0] === gameboard.board[5] && gameboard.board[5] === gameboard.board[10]) || // left vertical
+            (gameboard.board[2] === gameboard.board[7] && gameboard.board[7] === gameboard.board[12]) || // mid vertical
+            (gameboard.board[4] === gameboard.board[9] && gameboard.board[9] === gameboard.board[14]) || // right vertical
+    
+            (gameboard.board[0] === gameboard.board[7] && gameboard.board[7] === gameboard.board[14]) || // first diagonal
+            (gameboard.board[10] === gameboard.board[7] && gameboard.board[7] === gameboard.board[4])    // second diagonal
+        ) {
+            this.playerTurn ? console.log('Player One won.') : console.log('Player Two won.');
+            return true;
+
+        } else if (isItDraw) {
+            console.log('It\'s a draw.')
+            return true;
+
+        } else {
+            return false;
+        }
     },
 };
 
@@ -51,25 +75,27 @@ const playerTwo = player.create({name: "Jane", marker: "O", score: 0});
         const userInput = prompt('Position (1-9): ');
         
         if (userInput > 0 && userInput < 10) {
+
             if (!gameboard.board.includes(userInput)) {
                 console.log('Position is already taken, try again.');
                 continue;
             }
+
             const index = gameboard.board.indexOf(userInput);
             game.putMarker(index);
             gameboard.display();
 
-            if (game.didSomeoneWin == true) {
+            if (game.didSomeoneWin()) {
                 break
             }
 
             game.playerTurn = !game.playerTurn;
+
         } else if (userInput === null) {
             break
+
         } else {
             console.log('Invalid position, try again.')
         }
     }
 })();
-
-// add didSomeoneWin method
