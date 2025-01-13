@@ -51,7 +51,11 @@ const playerTwo = player.create({name: "Jane", marker: "O", score: 0});
         const userInput = prompt('Position (1-9): ');
         
         if (userInput > 0 && userInput < 10) {
-            const index = gameboard.board.indexOf(userInput);  // cover the taken positions??
+            if (!gameboard.board.includes(userInput)) {
+                console.log('Position is already taken, try again.');
+                continue;
+            }
+            const index = gameboard.board.indexOf(userInput);
             game.putMarker(index);
             gameboard.display();
 
@@ -67,3 +71,5 @@ const playerTwo = player.create({name: "Jane", marker: "O", score: 0});
         }
     }
 })();
+
+// add didSomeoneWin method
