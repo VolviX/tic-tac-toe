@@ -14,9 +14,7 @@ const gameboard = {
 const player = {
     create(values) {
         const instance = Object.create(this);
-        Object.keys(values).forEach((key) => {
-            instance[key] = values[key];
-        });
+        Object.assign(instance, values);
         return instance;
     },
 };
@@ -40,29 +38,38 @@ const game = {
     didSomeoneWin() {
         const locationsToCheck = ['1', '2', '3', '4', '5', '6', '7', '8', '9']; 
         const isItDraw = locationsToCheck.every(num => !gameboard.board.includes(num));
-
-        if (
-            (gameboard.board[0] === gameboard.board[2] && gameboard.board[2] === gameboard.board[4]) || // top horizontal
-            (gameboard.board[5] === gameboard.board[7] && gameboard.board[7] === gameboard.board[9]) || // mid horizontal
-            (gameboard.board[10] === gameboard.board[12] && gameboard.board[12] === gameboard.board[14]) || // bottom horizontal
     
-            (gameboard.board[0] === gameboard.board[5] && gameboard.board[5] === gameboard.board[10]) || // left vertical
-            (gameboard.board[2] === gameboard.board[7] && gameboard.board[7] === gameboard.board[12]) || // mid vertical
-            (gameboard.board[4] === gameboard.board[9] && gameboard.board[9] === gameboard.board[14]) || // right vertical
+        const WINNING_COMBINATIONS = [
+            [0, 2, 4], // Top row
+            [5, 7, 9], // Middle row
+            [10, 12, 14], // Bottom row
+            [0, 5, 10], // Left column
+            [2, 7, 12], // Middle column
+            [4, 9, 14], // Right column
+            [0, 7, 14], // Diagonal
+            [10, 7, 4], // Diagonal
+        ];
     
-            (gameboard.board[0] === gameboard.board[7] && gameboard.board[7] === gameboard.board[14]) || // first diagonal
-            (gameboard.board[10] === gameboard.board[7] && gameboard.board[7] === gameboard.board[4])    // second diagonal
-        ) {
-            this.playerTurn ? console.log('Player One won.') : console.log('Player Two won.');
+        const winnerFound = WINNING_COMBINATIONS.some((combo) => {
+            const [a, b, c] = combo;
+            return (
+                gameboard.board[a] === gameboard.board[b] &&
+                gameboard.board[b] === gameboard.board[c] &&
+                (gameboard.board[a] === playerOne.marker || gameboard.board[a] === playerTwo.marker)
+            );
+        });
+    
+        if (winnerFound) {
+            console.log(this.playerTurn ? 'Player One won!' : 'Player Two won!');
             return true;
-
-        } else if (isItDraw) {
-            console.log('It\'s a draw.')
-            return true;
-
-        } else {
-            return false;
         }
+    
+        if (isItDraw) {
+            console.log('It\'s a draw.');
+            return true;
+        }
+    
+        return false; // If no win or draw, continue the game
     },
 };
 
